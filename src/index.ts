@@ -35,10 +35,13 @@ const job = () => {
         const player = createAudioPlayer();
         connection.subscribe(player);
 
-        const ytdlProcess = ytdl(YOUTUBE_URL, {filter: "audioonly"});
-        ytdlProcess.on("error", (err) => console.error(err));
+        const stream = ytdl(YOUTUBE_URL, {filter: "audioonly"});
+        stream.on("error", (err) => console.error(err));
 
-        player.play(createAudioResource(ytdlProcess));
+        const resource = createAudioResource(stream, {inlineVolume: true});
+        resource.volume?.setVolume(0.2);
+
+        player.play(resource);
     } catch (error) {
         console.log(error);
     } finally {
