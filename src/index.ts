@@ -2,7 +2,6 @@ import {GatewayIntentBits, Client, Events} from "discord.js";
 import dotenv from "dotenv";
 import ytdl from "ytdl-core"
 import {createAudioPlayer, createAudioResource, joinVoiceChannel} from "@discordjs/voice";
-import {CronJob} from "cron";
 import ffmpeg from "ffmpeg-static";
 
 dotenv.config();
@@ -10,6 +9,7 @@ dotenv.config();
 const BOT_TOKEN = process.env["BOT_TOKEN"]!;
 const GUILD_ID = process.env["GUILD_ID"]!;
 const CHANNEL_ID = process.env["VOICE_CHANNEL_ID"]!;
+const YOUTUBE_URL = process.env["YOUTUBE_URL"]!;
 
 const client = new Client({
     intents: [
@@ -20,9 +20,11 @@ const client = new Client({
 
 client.once(Events.ClientReady, (c) => {
     console.log(`Ready! Logged in as ${c.user.tag}`);
+
+    job();
 })
 
-const job = new CronJob("0 0 3 * * *", () => {
+const job = () => {
     const connection = joinVoiceChannel({
         channelId: CHANNEL_ID,
         guildId: GUILD_ID,
@@ -33,7 +35,7 @@ const job = new CronJob("0 0 3 * * *", () => {
         const player = createAudioPlayer();
         connection.subscribe(player);
 
-        const ytdlProcess = ytdl(process.env["YOUTUBE_URL"]!, {filter: "audioonly"});
+        const ytdlProcess = ytdl(YOUTUBE_URL, {filter: "audioonly"});
         ytdlProcess.on("error", (err) => console.error(err));
 
         player.play(createAudioResource(ytdlProcess));
@@ -42,8 +44,6 @@ const job = new CronJob("0 0 3 * * *", () => {
     } finally {
         setTimeout(() => connection.destroy(), 15_000);
     }
-}, null, true, "Asia/Seoul");
-
-job.start();
+};
 
 client.login(BOT_TOKEN);
