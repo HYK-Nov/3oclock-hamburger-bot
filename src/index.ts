@@ -2,6 +2,7 @@ import {GatewayIntentBits, Client, Events} from "discord.js";
 import dotenv from "dotenv";
 import ytdl from "ytdl-core"
 import {createAudioPlayer, createAudioResource, joinVoiceChannel} from "@discordjs/voice";
+import {CronJob} from "cron";
 
 dotenv.config();
 
@@ -18,7 +19,9 @@ const client = new Client({
 
 client.once(Events.ClientReady, (c) => {
     console.log(`Ready! Logged in as ${c.user.tag}`);
+})
 
+const job = new CronJob("0 0 3 * * *", () => {
     const connection = joinVoiceChannel({
         channelId: CHANNEL_ID,
         guildId: GUILD_ID,
@@ -38,6 +41,8 @@ client.once(Events.ClientReady, (c) => {
     } finally {
         setTimeout(() => connection.destroy(), 15_000);
     }
-})
+}, null, true, "Asia/Seoul");
+
+job.start();
 
 client.login(BOT_TOKEN);
