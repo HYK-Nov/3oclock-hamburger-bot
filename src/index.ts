@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import ytdl from "ytdl-core"
 import {createAudioPlayer, createAudioResource, joinVoiceChannel} from "@discordjs/voice";
 import {CronJob} from "cron";
+import ffmpeg from "ffmpeg-static";
 
 dotenv.config();
 
