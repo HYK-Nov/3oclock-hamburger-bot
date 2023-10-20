@@ -1,0 +1,29 @@
+name: 3 o'clock auto play
+
+on:
+  schedule: # UTC+9 기준 3시 실행
+    - cron:  "*/5 5 * * *"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    timeout-minutes: 5
+
+    steps:
+    - uses: actions/checkout@v3
+    
+    - uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+        cache: 'npm'
+        
+    - name: Setting .env
+      run: |
+        echo "BOT_TOKEN=${{ secrets.BOT_TOKEN }}" >> .env
+        echo "GUILD_ID=${{ secrets.GUILD_ID }}" >> .env
+        echo "VOICE_CHANNEL_ID=${{ secrets.VOICE_CHANNEL_ID }}" >> .env
+        echo "YOUTUBE_URL=${{ secrets.YOUTUBE_URL }}" >> .env
+        
+    - run: npm ci
+    - run: npm run start
